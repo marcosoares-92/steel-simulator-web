@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Steel Industry Digital Twin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</head>
+<body data-lang="{{ lang }}">
+  <div class="yard"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <h1 data-i18n="title">Steel Industry Digital Twin</h1>
+        <p class="brand-sub" data-i18n="subtitle">Painel de Controle da Fábrica</p>
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><span class="kpi-label" data-i18n="kpi_sims">SIMULAÇÕES</span><span class="kpi-value" id="kpi-sims">0</span></div>
+      <div class="kpi"><span class="kpi-label" data-i18n="kpi_mean">kWh MÉDIO</span><span class="kpi-value" id="kpi-mean">—</span></div>
+      <div class="kpi"><span class="kpi-label" data-i18n="kpi_total">kWh TOTAL</span><span class="kpi-value" id="kpi-total">—</span></div>
+      <div class="kpi"><span class="kpi-label" data-i18n="kpi_hours">HORAS</span><span class="kpi-value" id="kpi-hours">—</span></div>
+    </div>
+    <div class="lang-toggle">
+      <button type="button" class="lang-btn active" data-lang="pt" id="btn-pt">PT</button>
+      <button type="button" class="lang-btn" data-lang="en" id="btn-en">EN</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button type="button" class="tab active" data-tab="plant" data-i18n="tab_plant">FÁBRICA</button>
+    <button type="button" class="tab" data-tab="data" data-i18n="tab_data">DADOS E GRÁFICOS</button>
+    <button type="button" class="tab" data-tab="guide" data-i18n="tab_guide">GUIA DOS PARÂMETROS</button>
+    <button type="button" class="tab" data-tab="about" data-i18n="tab_about">MISSÃO E APOIO</button>
+  </nav>
+
+  <main>
+    <section class="panel tab-panel active" id="panel-plant">
+      <div class="plant-stage">
+        <div class="plant-map" aria-hidden="false">
+          <svg class="plant-svg" viewBox="0 0 900 520" role="img" aria-label="Factory schematic">
+            <defs>
+              <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#9aa3ad"/>
+                <stop offset="100%" stop-color="#4a5560"/>
+              </linearGradient>
+              <linearGradient id="heat" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stop-color="#7a2a12"/>
+                <stop offset="100%" stop-color="#e07a2f"/>
+              </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="900" height="520" fill="#1a222b"/>
+            <rect x="0" y="430" width="900" height="90" fill="#2a3138"/>
+            <g class="pipe" stroke="#6d7884" stroke-width="10" fill="none">
+              <path d="M140 250 H280 V180 H420"/>
+              <path d="M500 180 H620 V260 H740"/>
+              <path d="M280 250 V340 H520 V300"/>
+            </g>
+            <g transform="translate(70,190)">
+              <rect width="120" height="110" rx="4" fill="url(#steel)" stroke="#c9d0d6" stroke-width="2"/>
+              <rect x="20" y="-40" width="18" height="40" fill="#7a8590"/>
+              <rect x="80" y="-55" width="18" height="55" fill="#7a8590"/>
+              <text x="60" y="58" text-anchor="middle" fill="#f0f3f5" font-size="14" font-family="Rajdhani">SUBESTAÇÃO</text>
+            </g>
+            <g transform="translate(390,110)">
+              <rect width="140" height="140" rx="6" fill="url(#heat)" stroke="#f0b060" stroke-width="2"/>
+              <rect x="50" y="-70" width="40" height="70" fill="#5a6570"/>
+              <rect x="45" y="-90" width="50" height="20" fill="#3a424a"/>
+              <circle cx="70" cy="70" r="28" fill="#2a1010" stroke="#ffb060"/>
+              <text x="70" y="125" text-anchor="middle" fill="#fff4e6" font-size="15" font-family="Rajdhani">FORNO</text>
+            </g>
+            <g transform="translate(620,210)">
+              <rect width="160" height="100" rx="4" fill="url(#steel)" stroke="#c9d0d6" stroke-width="2"/>
+              <circle cx="45" cy="55" r="28" fill="#3a444e" stroke="#e07a2f" stroke-width="3"/>
+              <circle cx="110" cy="55" r="28" fill="#3a444e" stroke="#e07a2f" stroke-width="3"/>
+              <text x="80" y="88" text-anchor="middle" fill="#f0f3f5" font-size="14" font-family="Rajdhani">LAMINAÇÃO</text>
+            </g>
+            <g transform="translate(470,300)">
+              <rect width="110" height="70" rx="4" fill="#3d5a6c" stroke="#8ec5d8" stroke-width="2"/>
+              <path d="M20 20 h70 M20 35 h70 M20 50 h70" stroke="#8ec5d8" stroke-width="3"/>
+              <text x="55" y="64" text-anchor="middle" fill="#e8f6fb" font-size="13" font-family="Rajdhani">RESFRIAMENTO</text>
+            </g>
+            <g class="plume">
+              <ellipse cx="460" cy="55" rx="18" ry="10" fill="rgba(200,210,220,0.35)"/>
+              <ellipse cx="475" cy="35" rx="22" ry="12" fill="rgba(200,210,220,0.25)"/>
+            </g>
+          </svg>
+
+          <div class="hotspot hs-load">
+            <span class="hs-title" data-i18n="hs_load">Carga</span>
+            <span class="hs-val" id="hs-load">Light_Load</span>
+          </div>
+          <div class="hotspot hs-energy">
+            <span class="hs-title" data-i18n="hs_energy">Energia</span>
+            <span class="hs-val" id="hs-energy">— kWh</span>
+          </div>
+          <div class="hotspot hs-goal">
+            <span class="hs-title" data-i18n="hs_goal">Objetivo</span>
+            <span class="hs-val" data-i18n="hs_goal_val">Minimizar kWh</span>
+          </div>
+        </div>
+
+        <aside class="controls">
+          <h2 data-i18n="controls_title">Condições de operação</h2>
+          <p class="controls-hint" data-i18n="controls_hint">Abra cada item para ler o significado. Em seguida use os botões da barra inferior.</p>
+
+          <details class="param-help" open>
+            <summary data-i18n="help_time_sum">Horizonte temporal</summary>
+            <p data-i18n="help_time">Data de início + dias + horas extras = duração horária da planta. Padrão 1 dia e 0 horas = 24 h. Máx. 14 dias neste demo.</p>
+            <label class="field"><span data-i18n="lbl_start">Início</span><input type="date" id="start_date" value="2024-02-21" /></label>
+            <label class="field"><span data-i18n="lbl_days">Total de dias</span><input type="number" id="total_days" min="0" max="14" value="1" /></label>
+            <label class="field"><span data-i18n="lbl_hours">Total de horas extras</span><input type="number" id="total_hours" min="0" max="23" value="0" /></label>
+          </details>
+
+          <details class="param-help">
+            <summary data-i18n="help_lag_q_sum">Potência reativa atrasada (kVArh)</summary>
+            <p data-i18n="help_lag_q">Lagging Current reactive power. Variável elétrica de entrada do gêmeo digital (faixa do dataset horário público).</p>
+            <label class="slider-field">
+              <span class="slider-head"><span data-i18n="lbl_lag_q">Potência reativa atrasada (kVArh)</span><strong id="val-lagging_q">{{ ranges.lagging_q.default }}</strong></span>
+              <input type="range" id="lagging_q" min="{{ ranges.lagging_q.min }}" max="{{ ranges.lagging_q.max }}" step="{{ ranges.lagging_q.step }}" value="{{ ranges.lagging_q.default }}" />
+            </label>
+          </details>
+
+          <details class="param-help">
+            <summary data-i18n="help_lead_q_sum">Potência reativa principal (kVArh)</summary>
+            <p data-i18n="help_lead_q">Leading Current reactive power. Também usada para derivar o fator de potência leading por correlação linear + ruído.</p>
+            <label class="slider-field">
+              <span class="slider-head"><span data-i18n="lbl_lead_q">Potência reativa principal (kVArh)</span><strong id="val-leading_q">{{ ranges.leading_q.default }}</strong></span>
+              <input type="range" id="leading_q" min="{{ ranges.leading_q.min }}" max="{{ ranges.leading_q.max }}" step="{{ ranges.leading_q.step }}" value="{{ ranges.leading_q.default }}" />
+            </label>
+          </details>
+
+          <details class="param-help">
+            <summary data-i18n="help_co2_sum">tCO2 (ppm CO2)</summary>
+            <p data-i18n="help_co2">Indicador de CO2 associado à operação (variável contínua do dataset UCI).</p>
+            <label class="slider-field">
+              <span class="slider-head"><span data-i18n="lbl_co2">tCO2 (ppm CO2)</span><strong id="val-co2">{{ ranges.co2.default }}</strong></span>
+              <input type="range" id="co2" min="{{ ranges.co2.min }}" max="{{ ranges.co2.max }}" step="{{ ranges.co2.step }}" value="{{ ranges.co2.default }}" />
+            </label>
+          </details>
+
+          <details class="param-help">
+            <summary data-i18n="help_lag_pf_sum">Fator de potência atrasada (%)</summary>
+            <p data-i18n="help_lag_pf">Lagging Current power factor (%). Entrada direta do painel; influencia o cluster elétrico e a previsão de kWh.</p>
+            <label class="slider-field">
+              <span class="slider-head"><span data-i18n="lbl_lag_pf">Fator de potência atrasada (%)</span><strong id="val-lagging_pf">{{ ranges.lagging_pf.default }}</strong></span>
+              <input type="range" id="lagging_pf" min="{{ ranges.lagging_pf.min }}" max="{{ ranges.lagging_pf.max }}" step="{{ ranges.lagging_pf.step }}" value="{{ ranges.lagging_pf.default }}" />
+            </label>
+          </details>
+
+          <details class="param-help">
+            <summary data-i18n="help_load_sum">Tipo de carga</summary>
+            <p data-i18n="help_load">Light_Load, Medium_Load ou Maximum_Load — categorias do dataset. Codificadas em one-hot no pipeline.</p>
+            <label class="field">
+              <span data-i18n="lbl_load">Tipo de carga</span>
+              <select id="load_type">
+                {% for lt in load_types %}
+                <option value="{{ lt }}" {% if lt == 'Light_Load' %}selected{% endif %}>{{ lt }}</option>
+                {% endfor %}
+              </select>
+            </label>
+          </details>
+        </aside>
+      </div>
+
+      <footer class="status-bar">
+        <div class="status-meters">
+          <div><span>Q lag</span><em id="meter-lagging_q">{{ ranges.lagging_q.default }}</em></div>
+          <div><span>Q lead</span><em id="meter-leading_q">{{ ranges.leading_q.default }}</em></div>
+          <div><span>CO2</span><em id="meter-co2">{{ ranges.co2.default }}</em></div>
+          <div><span>PF lag</span><em id="meter-lagging_pf">{{ ranges.lagging_pf.default }}</em></div>
+        </div>
+        <p class="gazette" id="gazette" data-i18n="gazette_idle">Gazeta da fábrica: aguardando partida da produção.</p>
+        <div class="actions">
+          <div class="action-block">
+            <button type="button" class="btn-primary" id="btn-run" data-i18n="btn_run">INICIAR DIA DE PRODUÇÃO</button>
+            <small data-i18n="btn_run_help">Executa o gêmeo digital (KMeans + encoder-decoder) e prevê o consumo horário em kWh. Resultado na aba Dados e Gráficos.</small>
+          </div>
+          <div class="action-block">
+            <a class="btn-secondary" id="btn-excel" href="/api/export-excel" data-i18n="btn_excel">BAIXAR EXCEL</a>
+            <small data-i18n="btn_excel_help">Exporta todas as simulações da sessão (dados + relatório). Requer ao menos uma simulação concluída.</small>
+          </div>
+        </div>
+      </footer>
+    </section>
+
+    <section class="panel tab-panel" id="panel-data">
+      <div class="data-grid">
+        <div class="chart-wrap">
+          <h2 data-i18n="chart_title">Consumo energético (kWh)</h2>
+          <p class="chart-hint" data-i18n="chart_hint">Plotly interativo: zoom, pan e exportar PNG pelo ícone de câmera na barra do gráfico.</p>
+          <div id="kwh-chart" class="plotly-box"></div>
+        </div>
+        <div class="table-wrap">
+          <h2 data-i18n="table_title">Tabela da última simulação</h2>
+          <div class="table-scroll">
+            <table id="results-table"><thead></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel tab-panel" id="panel-guide">
+      <article class="about-card">
+        <h2 data-i18n="guide_title">Guia dos parâmetros e da resposta</h2>
+        <p data-i18n="guide_intro">Digital twin baseado em dados públicos UCI de uma planta siderúrgica de pequena escala (Gwangyang). Objetivo didático: minimizar o consumo previsto de energia.</p>
+        <ul class="guide-list">
+          <li data-i18n="guide_resp">Resposta principal: usage_kwh (consumo energético horário).</li>
+          <li data-i18n="guide_extra">Também retorna leading PF, NSM, weekstatus e day_of_week.</li>
+          <li data-i18n="guide_models">Runtime: KMeans + TensorFlow encoder-decoder (SavedModel).</li>
+          <li data-i18n="guide_actions">Fluxo: ajuste → Iniciar dia → gráfico/tabela → Excel / PNG Plotly.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="panel tab-panel" id="panel-about">
+      <article class="about-card">
+        <h2 data-i18n="about_title">Missão e material de apoio</h2>
+        <p id="welcome-text">{{ welcome }}</p>
+        <ul>
+          <li data-i18n="about_goal">Meta: explorar parâmetros para reduzir o consumo previsto de energia (kWh).</li>
+          <li data-i18n="about_public">Usa dados públicos (UCI Steel Industry Energy Consumption).</li>
+          <li data-i18n="about_didactic">Treinamento, testes, experimentação e fins didáticos.</li>
+          <li data-i18n="about_no_prop">Nenhuma informação proprietária é utilizada.</li>
+          <li><a href="https://archive.ics.uci.edu/ml/datasets/Steel+Industry+Energy+Consumption+Dataset" target="_blank" rel="noopener">UCI dataset</a></li>
+          <li><a href="https://github.com/marcosoares-92/IndustrialDataScienceWorkflow" target="_blank" rel="noopener">Industrial Data Science Workflow (idsw)</a></li>
+        </ul>
+        <p class="credits">{{ author }}<br />{{ ai_credit }}</p>
+      </article>
+    </section>
+  </main>
+
+  <div class="loader hidden" id="loader">
+    <div class="loader-box">
+      <div class="spinner"></div>
+      <p data-i18n="loading">Calculando consumo energético…</p>
+    </div>
+  </div>
+</body>
+</html>
